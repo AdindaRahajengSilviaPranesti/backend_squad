@@ -16,6 +16,7 @@ var bpdRouter = require('./routes/bpd');
 var authRouter = require('./routes/auth');
 var flowReleaseRouter = require('./routes/flowRelease');
 var radarvisualRouter = require('./routes/radarvisual');
+var capabilityRouter = require('./routes/capability');
 
 var app = express();
 
@@ -42,6 +43,7 @@ app.use('/calibration', calibrationRouter);
 app.use('/bpd', bpdRouter);
 app.use('/flow-release', flowReleaseRouter);
 app.use('/radarvisual', radarvisualRouter);
+app.use('/capability', capabilityRouter);
 
 
 // catch 404 and forward to error handler
