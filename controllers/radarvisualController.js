@@ -11,6 +11,8 @@ module.exports = {
             and insp_start_date = curdate()`
             let [data, _] = await iot_qa_kimfis.query(query);
 
+            
+
             res.status(200).json(data);
         } catch (error) {
             return res.status(500).json({ message: error.message })
