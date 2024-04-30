@@ -16,11 +16,7 @@ var bpdRouter = require('./routes/bpd');
 var authRouter = require('./routes/auth');
 var flowReleaseRouter = require('./routes/flowRelease');
 var radarvisualRouter = require('./routes/radarvisual');
-var capaTrackerRouter = require('./routes/capaTracker');
-var inprocesscontrollRouter = require('./routes/inprocesscontroll');
-
-
-
+var capabilityRouter = require('./routes/capability');
 
 var app = express();
 
@@ -28,7 +24,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(cors())
-
+// console.log('baru');
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -47,13 +43,7 @@ app.use('/calibration', calibrationRouter);
 app.use('/bpd', bpdRouter);
 app.use('/flow-release', flowReleaseRouter);
 app.use('/radarvisual', radarvisualRouter);
-<<<<<<< HEAD
 app.use('/capability', capabilityRouter);
-//
-=======
-app.use('/capa-tracker', capaTrackerRouter);
-app.use('/inprocess-fsb', inprocesscontrollRouter);
->>>>>>> ac205daf651fa2340ee4222cc6610008a3b90fe7
 
 
 // catch 404 and forward to error handler
