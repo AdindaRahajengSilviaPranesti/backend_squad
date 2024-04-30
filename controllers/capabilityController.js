@@ -28,14 +28,14 @@ module.exports = {
     countCapability: async (req, res) => {
         try {
             const obj = {
-                type_analisa : 'Pengambilan Sample Finish Good',
-                jenis_uji : req.body.jenis_uji,
-                group_pengujian : 'Produk',
-                category : 'Pocari',
-                start:req.body.start_date,
-                end:req.body.end_date
+                type_analisa: 'Pengambilan Sample Finish Good',
+                jenis_uji: req.body.jenis_uji,
+                group_pengujian: 'Produk',
+                category: 'Pocari',
+                start: req.body.start_date,
+                end: req.body.end_date
             }
-    
+
             let val1 = await al4_skb.query(
                 `SELECT
                     c.min as lsl,
@@ -56,16 +56,16 @@ module.exports = {
                     AND d.category = :category
                     AND b.tgl_update >= :start
                     AND b.tgl_update <= :end `, {
-                  type: al4_skb.QueryTypes.SELECT,
-                  replacements:obj
-                }
+                type: al4_skb.QueryTypes.SELECT,
+                replacements: obj
+            }
             ).catch((error) => {
                 console.log(error);
                 res.status(500).json({
                     message: "Count Mean Failed",
                 });
             })
-            
+
             let val2 = await al4_skb.query(
                 `SELECT
                     ROUND(stddev(a.hasil2),2) AS stdev,
@@ -84,26 +84,26 @@ module.exports = {
                     AND d.category = :category
                     AND b.tgl_pengerjaan >= :start
                     AND b.tgl_pengerjaan <= :end `, {
-                  type: al4_skb.QueryTypes.SELECT,
-                  replacements:obj
-                }
+                type: al4_skb.QueryTypes.SELECT,
+                replacements: obj
+            }
             ).catch((error) => {
                 console.log(error);
                 res.status(500).json({
                     message: "Count Mean Failed",
                 });
             })
-    
-            
+
+
             const combinedArray = val1.concat(val2);
-    
+
             console.log(combinedArray);
-    
+
             res.status(200).json({
                 message: "Calculate Capability Success",
                 data: combinedArray,
             });
-            
+
         } catch (error) {
             console.log(error);
             res.status(500).json({
@@ -111,18 +111,18 @@ module.exports = {
             });
         }
     },
-    
+
     dataTable: async (req, res) => {
         try {
             const obj = {
-                type_analisa : 'Pengambilan Sample Finish Good',
-                jenis_uji : req.body.jenis_uji,
-                group_pengujian : 'Produk',
-                category : 'Pocari',
-                start:req.body.start_date,
-                end:req.body.end_date
+                type_analisa: 'Pengambilan Sample Finish Good',
+                jenis_uji: req.body.jenis_uji,
+                group_pengujian: 'Produk',
+                category: 'Pocari',
+                start: req.body.start_date,
+                end: req.body.end_date
             }
-    
+
             let query = await al4_skb.query(
                 `SELECT 
                     b.lotno,
@@ -151,21 +151,74 @@ module.exports = {
                     b.lotno, b.urutan_sample
                 ORDER BY 
                     b.id `, {
-                  type: al4_skb.QueryTypes.SELECT,
-                  replacements:obj
-                }
+                type: al4_skb.QueryTypes.SELECT,
+                replacements: obj
+            }
             ).catch((error) => {
                 console.log(error);
                 res.status(500).json({
                     message: "Get data Failed",
                 });
             })
-    
+
             res.status(200).json({
                 message: "Get data Success",
                 data: query,
             });
-            
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                message: "Get data Failed",
+            });
+        }
+    },
+
+    linechartCapability: async (req, res) => {
+        try {
+            const obj = {
+                type_analisa: 'Pengambilan Sample Finish Good',
+                jenis_uji: req.body.jenis_uji,
+                category: 'Pocari',
+                start: req.body.start_date,
+                end: req.body.end_date
+            }
+
+            let query = await al4_skb.query(
+                `SELECT
+			        b.tgl_pengerjaan as time,
+			        CAST(a.hasil2 as decimal(8,2)) AS value,
+			        b.lotno as 'metric'
+			    FROM 
+                    tr_ipc_d a 
+                    LEFT JOIN tr_ipc_h b ON a.id_head = b.id
+                    LEFT JOIN mst_jenispengujian c ON a.id_jenis_uji = c.id
+                    LEFT JOIN mst_product_copy d ON c.product = d.id
+                WHERE 
+                    b.type_analisa = :type_analisa
+                    AND a.jenis_uji = :jenis_uji 
+                    AND d.category = :category
+                    AND b.tgl_pengerjaan >= :start
+                    AND b.tgl_pengerjaan <= :end
+                GROUP BY 
+                    b.lotno
+                ORDER BY 
+                    b.tgl_pengerjaan ASC `, {
+                type: al4_skb.QueryTypes.SELECT,
+                replacements: obj
+            }
+            ).catch((error) => {
+                console.log(error);
+                res.status(500).json({
+                    message: "Get data Failed",
+                });
+            })
+
+            res.status(200).json({
+                message: "Get line data Success",
+                data: query,
+            });
+
         } catch (error) {
             console.log(error);
             res.status(500).json({
