@@ -11,8 +11,6 @@ module.exports = {
             and insp_start_date = curdate()`
             let [data, _] = await iot_qa_kimfis.query(query);
 
-            
-
             res.status(200).json(data);
         } catch (error) {
             return res.status(500).json({ message: error.message })
@@ -38,7 +36,6 @@ module.exports = {
         }
     },
 
-
     getType: async (req, res) => {
         try {
             let date = new Date();
@@ -51,7 +48,6 @@ module.exports = {
             return res.status(500).json({ message: error.message })
         }
     },
-
 
     getSupplier: async (req, res) => {
         try {
@@ -87,9 +83,6 @@ module.exports = {
             return res.status(500).json({ message: error.message })
         }
     },
-
-
-
     
     getDataAnalysisByDate: async (req, res) => {
         try {
@@ -197,7 +190,6 @@ module.exports = {
             return res.status(500).json({ message: error.message })
         }
     },
-
 
 
 }
