@@ -112,7 +112,7 @@ module.exports = {
         }
     },
 
-    dataTable: async (req, res) => {
+    dataTable: async (req, res) => { // barchart, trend data(line), tabel
         try {
             const obj = {
                 type_analisa: 'Pengambilan Sample Finish Good',
@@ -124,33 +124,36 @@ module.exports = {
             }
 
             let query = await al4_skb.query(
-                `SELECT 
+                `SELECT
                     b.lotno,
-                    case 
-                        when  b.urutan_sample = 1 then 'Awal'
-                        when b.urutan_sample = 7 then 'Tengah'
-                        when b.urutan_sample = 8 then 'Akhir'
-                    else 'null' end as urutan_sample, 
-                    ROUND(AVG(a.hasil2),2) AS value ,
-                    case 
-                        when (a.hasil2 > c.min AND a.hasil2 < c.max) then 1
-                    ELSE 0 END AS status
+                    CASE
+                        WHEN  b.urutan_sample = 1 THEN 'Awal'
+                        WHEN b.urutan_sample = 7 THEN 'Tengah'
+                        WHEN b.urutan_sample = 8 THEN 'Akhir'
+                        else 'null' 
+                    end as 'urutan_sample',
+                    b.tgl_pengerjaan,
+                    CAST(a.hasil2 as decimal(8,2)) AS value,
+                    b.lotno as 'metric',
+                    CASE 
+                        WHEN (a.hasil2 > 30 AND a.hasil2 < 90) THEN 1
+                        ELSE 0 
+                    END AS status
                 FROM 
-                    tr_ipc_d a LEFT JOIN tr_ipc_h b ON a.id_head = b.id
+                    tr_ipc_d a 
+                    LEFT JOIN tr_ipc_h b ON a.id_head = b.id
                     LEFT JOIN mst_jenispengujian c ON a.id_jenis_uji = c.id
                     LEFT JOIN mst_product_copy d ON c.product = d.id
-                    LEFT JOIN mst_group_pengujian e ON a.group_uji = e.id
                 WHERE 
-                    b.type_analisa = :type_analisa
-                    AND c.jenis_uji = :jenis_uji
-                    AND e.group_pengujian = :group_pengujian
+                    b.type_analisa = :type_analisa 
+                    AND a.jenis_uji = :jenis_uji  
                     AND d.category = :category
-                    AND b.tgl_update >= :start
-                    AND b.tgl_update <= :end
+                    AND b.tgl_pengerjaan >= :start
+                    AND b.tgl_pengerjaan <= :end
                 GROUP BY 
                     b.lotno, b.urutan_sample
                 ORDER BY 
-                    b.id `, {
+                    b.id ASC `, {
                 type: al4_skb.QueryTypes.SELECT,
                 replacements: obj
             }
