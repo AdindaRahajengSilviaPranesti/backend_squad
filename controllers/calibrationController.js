@@ -1,5 +1,4 @@
 const { valcalDB } = require('../config/connection');
-const { vcc_skb } = require('../config/connection');
 
 module.exports = {
       count_transaksi_tipe: async (req, res) => {
@@ -390,30 +389,6 @@ module.exports = {
           LEFT JOIN mst_sub_detail g ON a.sub_area_detail = g.id
           LEFT JOIN mst_vendor h ON a.vendor_calibration = h.id
           WHERE a.isactive=1 AND a.id = ${id}
-          `);
-          res.status(200).json({
-            status: 200,
-            message: "Success",
-            data: query[0],
-          });
-        } catch (error) {
-          console.log(error);
-        }
-      },
-
-      count_equiment: async (req, res) => {
-        try {
-          let query;
-          query = await vcc_skb.query(`
-          SELECT COUNT(*) AS jumlah_equipment
-          FROM (
-              SELECT 
-                  equipment_name
-              FROM 
-                  trans_kalibrasi
-              GROUP BY 
-                  equipment_name
-          ) AS subquery_result;
           `);
           res.status(200).json({
             status: 200,
