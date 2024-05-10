@@ -41,6 +41,7 @@ module.exports = {
             where date_format(tc.tgl_complain, '%Y-%m') between '${startDate}' and '${endDate}'
             and tc.nama_supplier = '${name_vendor}'
            	group by mmc.name_vendor;`
+            console.log(query)
             let [data, _] = await qa_tracking_supplier.query(query);
             res.status(200).json(data);
         } catch (error) {
