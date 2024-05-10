@@ -1,5 +1,20 @@
 var express = require('express');
-const { count_transaksi_tipe, transksi_by_status, count_transaksi_by_year, count_transaksi_by_month, transaksi_by_category, filter_transksi_month, count_transjenis_monthly, count_transreg_monthly, count_transjenis_yearly, count_transreg_yearly, month_trans, year_trans, getTrans, cetak, table_pending } = require('../controllers/calibrationController');
+const { 
+    count_transaksi_tipe, 
+    transksi_by_status, 
+    count_transaksi_by_year, 
+    count_transaksi_by_month, 
+    transaksi_by_category, 
+    filter_transksi_month, 
+    count_transjenis_monthly, 
+    count_transreg_monthly, 
+    count_transjenis_yearly, 
+    count_transreg_yearly, 
+    month_trans, year_trans, 
+    getTrans, 
+    cetak, 
+    table_pending,
+    count_equiment } = require('../controllers/calibrationController');
 var router = express.Router();
 
 router.get('/count_transaksi_tipe', count_transaksi_tipe);
@@ -17,5 +32,7 @@ router.get('/month_trans', month_trans);
 router.get('/year_trans', year_trans);
 router.get('/getTrans', getTrans);
 router.get('/cetak-kalibrasi/:id', cetak);
+
+router.get('/count-equipment', count_equiment);
 
 module.exports = router;
