@@ -10,8 +10,7 @@ module.exports = {
             where plant = 1203
             and insp_start_date = curdate()`
             let [data, _] = await iot_qa_kimfis.query(query);
-
-            
+            console.log('getMaterial', query)
 
             res.status(200).json(data);
         } catch (error) {
@@ -42,8 +41,10 @@ module.exports = {
     getType: async (req, res) => {
         try {
             let date = new Date();
-            let query = `select *
-            from mst_jenis mj;`
+            let query = `SELECT *
+            FROM mst_jenis mj 
+            WHERE mj.group_id  IN (1, 2)
+            order by jenis;`
             let [data, _] = await iot_qa_kimfis.query(query);
 
             res.status(200).json(data);
@@ -77,7 +78,8 @@ module.exports = {
             let query = `
             select mp.group_id, mp.jenis, mp.parameter , mp.standart 
             from mst_pengujian mp 
-            where group_id = ${typeid}  and jenis = ${id}  and type_value = 'numeric';
+            where group_id = ${typeid}  and jenis = ${id}  and type_value = 'numeric'
+            and mp.radar_visual in ('1','2','3');
             `
             let [data, _] = await iot_qa_kimfis.query(query);
             console.log(data)
@@ -95,6 +97,7 @@ module.exports = {
         try {
             let group_id = req.body.group_id;
             let id = req.body.id;
+            // let jenis = req.body.jenis;
             let parameter= req.body.parameterData;
             let startDate = req.body.startDate;
             let endDate = req.body.endDate;
@@ -127,7 +130,9 @@ module.exports = {
                 and mp.type_value = 'numeric'
                 and date_format(tils.insp_start_date, '%Y-%m') between '${startDate}' and '${endDate}'
                 group by tuph.id `
-            }
+            } 
+
+            console.log(query)
             
             let [data, _] = await iot_qa_kimfis.query(query);
             console.log(data)
@@ -143,6 +148,7 @@ module.exports = {
         try {
             let group_id = req.body.group_id;
             let id = req.body.id;
+            // let jenis = req.body.jenis;
             let parameter= req.body.parameterData;
             let startDate = req.body.startDate;
             let endDate = req.body.endDate;
@@ -159,7 +165,7 @@ module.exports = {
             where turh.group_id = ${group_id}
             and turh.jenis = ${id}
             and turd.item = '${parameter}'
-            and plant = 1203
+            and tils.plant = 1203
             and mp.type_value = 'numeric'
             and date_format(tils.insp_start_date, '%Y-%m') between '${startDate}' and '${endDate}'
             group by turh.id ) a
@@ -171,7 +177,7 @@ module.exports = {
             `
             select a.*, count(a.id) as total
             from 
-            (select tuph.*, tupd.item , tupd.result as result_d , tils.insp_start_date as startDate , , mp.max , mp.min
+            (select tuph.*, tupd.item , tupd.result as result_d , tils.insp_start_date as startDate , mp.max , mp.min
             from tr_uji_pm_h tuph 
             join tr_uji_pm_d tupd  on tuph.id = tupd.id_header 
             join tr_insp_lot_sap tils  on tils.material_number  = tuph.material_code
@@ -189,7 +195,8 @@ module.exports = {
 
         }
             let [data, _] = await iot_qa_kimfis.query(query);
-
+            console.log(data)
+            console.log(query)
             // const countData = data.filter(item => itemm)
 
             res.status(200).json(data);

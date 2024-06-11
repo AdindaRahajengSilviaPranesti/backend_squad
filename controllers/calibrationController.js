@@ -98,22 +98,24 @@ module.exports = {
         try {
           let query;
           query =
-            await valcalDB.query(`SELECT a.id,a.id_trans,a.reg_or_recal,a.in_or_ex,
-                a.no_dok,a.equipment_number,a.equipment_name,a.brand,
-                a.serial_number,a.location_detail,a.tanggal_calibration,
-                a.exp_calibration,a.tanggal_release_certificate,a.requestor,
-                a.pic_input,a.model,a.kondisi_alat,a.acceptance_kriteria,a.isactive,
+            await valcalDB.query(`SELECT tk.id,tk.id_trans,tk.reg_or_recal,tk.in_or_ex,
+                tk.no_dok,tk.equipment_number,tk.equipment_name,tk.brand,
+                tk.serial_number,tk.location_detail,tk.tanggal_calibration,
+                tk.exp_calibration,tk.tanggal_release_certificate,tk.requestor,
+                tk.pic_input,tk.model,tk.kondisi_alat,tk.acceptance_kriteria,tk.isactive,
                 b.category,c.sub_category,d.departement,e.area,f.sub_area,g.area,h.vendor
-                FROM trans_kalibrasi a 
-                left JOIN mst_category b ON a.category = b.id
-                left JOIN mst_sub_category c ON a.sub_category = c.id
-                LEFT JOIN mst_dept d ON a.departement = d.id
-                left JOIN mst_area e ON a.area = e.id
-                left JOIN mst_sub_area f ON a.sub_area = f.id
-                LEFT JOIN mst_sub_detail g ON a.sub_area_detail = g.id
-                LEFT JOIN mst_vendor h ON a.vendor_calibration = h.id
-                WHERE a.exp_calibration between NOW() and (DATE_ADD(NOW(), INTERVAL 2 MONTH)) 
-                AND a.isactive=1`);
+                FROM trans_kalibrasi tk 
+                left JOIN mst_category b ON tk.category = b.id
+                left JOIN mst_sub_category c ON tk.sub_category = c.id
+                LEFT JOIN mst_dept d ON tk.departement = d.id
+                left JOIN mst_area e ON tk.area = e.id
+                left JOIN mst_sub_area f ON tk.sub_area = f.id
+                LEFT JOIN mst_sub_detail g ON tk.sub_area_detail = g.id
+                LEFT JOIN mst_vendor h ON tk.vendor_calibration = h.id
+                WHERE tk.exp_calibration BETWEEN DATE_SUB(NOW(), INTERVAL 2 MONTH) AND NOW()
+  				AND tk.isactive = 1`);
+        console.log(query)
+
           res.status(200).json({
             status: 200,
             message: "Success",

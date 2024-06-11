@@ -6,7 +6,7 @@ module.exports = {
         try {
             let date = new Date();
             let query = `select ms.name_vendor, ms.plan, ms.kode_vendor 
-            from mst_supplier ms`
+            from mst_supplier ms order by name_vendor`
             let [data, _] = await qa_tracking_supplier.query(query);
             res.status(200).json(data);
         } catch (error) {
@@ -20,7 +20,7 @@ module.exports = {
             let plan =  req.params.plan;
             let query = `select ms.name_vendor, ms.plan , ms.kode_vendor
             from mst_supplier ms
-            where ms.plan = '${plan}';`
+            where ms.plan = '${plan}' order by name_vendor;`
             let [data, _] = await qa_tracking_supplier.query(query);
             res.status(200).json(data);
         } catch (error) {
@@ -74,11 +74,18 @@ module.exports = {
             let startDate = req.body.startDate;
             let endDate = req.body.endDate;
             let kode_vendor = req.body.kode_vendor;
-            let query = `select vfvq.abnormal , vfvq.bulan , vfvq.tahun , vfvq. kode_vendor, avg(vfvq.abnormal) as avg
+            let query = `           
+            select vfvq.issue , vfvq.bulan , vfvq.tahun , vfvq. kode_vendor, avg(vfvq.abnormal) as avgabnormal,
+            avg(vfvq.feedback) as avgfeedback,
+            avg(vfvq.acceptance_improvement) as avgeffectiveness,
+            avg(vfvq.downtime) as avgdowntime,
+            avg(vfvq.cc) as avgcustcomplain,
+            avg(vfvq.issue) as avgissue,
+            vfvq.suplier_name 
             from v_final_value_qc vfvq 
             where date_format(vfvq.tgl, '%Y-%m') between '${startDate}' and '${endDate}'
             and vfvq.kode_vendor  = '${kode_vendor}';`
-            console.log(query)
+            console.log('%Abnormality',query)
             let [data, _] = await qa_tracking_supplier.query(query);
             res.status(200).json(data);
         } catch (error) {
@@ -86,90 +93,90 @@ module.exports = {
         }
     },
 
-    getFeedback: async (req, res) => {
-        try {
-            let startDate = req.body.startDate;
-            let endDate = req.body.endDate;
-            let kode_vendor = req.body.kode_vendor;
-            let query = `select vfvq.feedback , vfvq.bulan , vfvq.tahun , vfvq. kode_vendor, avg(vfvq.abnormal) as avg
-            from v_final_value_qc vfvq 
-            where date_format(vfvq.tgl, '%Y-%m') between '${startDate}' and '${endDate}'
-            and vfvq.kode_vendor  = '${kode_vendor}';`
-            console.log(query)
-            let [data, _] = await qa_tracking_supplier.query(query);
-            res.status(200).json(data);
-        } catch (error) {
-            return res.status(500).json({ message: error.message })
-        }
-    },
+    // getFeedback: async (req, res) => {
+    //     try {
+    //         let startDate = req.body.startDate;
+    //         let endDate = req.body.endDate;
+    //         let kode_vendor = req.body.kode_vendor;
+    //         let query = `select vfvq.feedback , vfvq.bulan , vfvq.tahun , vfvq. kode_vendor, avg(vfvq.abnormal) as avg, vfvq.suplier_name 
+    //         from v_final_value_qc vfvq 
+    //         where date_format(vfvq.tgl, '%Y-%m') between '${startDate}' and '${endDate}'
+    //         and vfvq.kode_vendor  = '${kode_vendor}';`
+    //         console.log('feedback',query)
+    //         let [data, _] = await qa_tracking_supplier.query(query);
+    //         res.status(200).json(data);
+    //     } catch (error) {
+    //         return res.status(500).json({ message: error.message })
+    //     }
+    // },
 
-    getEffectiveness: async (req, res) => {
-        try {
-            let startDate = req.body.startDate;
-            let endDate = req.body.endDate;
-            let kode_vendor = req.body.kode_vendor;
-            let query = `select vfvq.acceptance_improvement , vfvq.bulan , vfvq.tahun , vfvq. kode_vendor, avg(vfvq.abnormal) as avg
-            from v_final_value_qc vfvq 
-            where date_format(vfvq.tgl, '%Y-%m') between '${startDate}' and '${endDate}'
-            and vfvq.kode_vendor  = '${kode_vendor}';`
-            console.log(query)
-            let [data, _] = await qa_tracking_supplier.query(query);
-            res.status(200).json(data);
-        } catch (error) {
-            return res.status(500).json({ message: error.message })
-        }
-    },
+    // getEffectiveness: async (req, res) => {
+    //     try {
+    //         let startDate = req.body.startDate;
+    //         let endDate = req.body.endDate;
+    //         let kode_vendor = req.body.kode_vendor;
+    //         let query = `select vfvq.acceptance_improvement , vfvq.bulan , vfvq.tahun , vfvq. kode_vendor, avg(vfvq.abnormal) as avg, vfvq.suplier_name 
+    //         from v_final_value_qc vfvq 
+    //         where date_format(vfvq.tgl, '%Y-%m') between '${startDate}' and '${endDate}'
+    //         and vfvq.kode_vendor  = '${kode_vendor}';`
+    //         console.log('effectiveness',query)
+    //         let [data, _] = await qa_tracking_supplier.query(query);
+    //         res.status(200).json(data);
+    //     } catch (error) {
+    //         return res.status(500).json({ message: error.message })
+    //     }
+    // },
 
-    getDowntime: async (req, res) => {
-        try {
-            let startDate = req.body.startDate;
-            let endDate = req.body.endDate;
-            let kode_vendor = req.body.kode_vendor;
-            let query = `select vfvq.downtime , vfvq.bulan , vfvq.tahun , vfvq. kode_vendor, avg(vfvq.abnormal) as avg
-            from v_final_value_qc vfvq 
-            where date_format(vfvq.tgl, '%Y-%m') between '${startDate}' and '${endDate}'
-            and vfvq.kode_vendor  = '${kode_vendor}';`
-            console.log(query)
-            let [data, _] = await qa_tracking_supplier.query(query);
-            res.status(200).json(data);
-        } catch (error) {
-            return res.status(500).json({ message: error.message })
-        }
-    },
+    // getDowntime: async (req, res) => {
+    //     try {
+    //         let startDate = req.body.startDate;
+    //         let endDate = req.body.endDate;
+    //         let kode_vendor = req.body.kode_vendor;
+    //         let query = `select vfvq.downtime , vfvq.bulan , vfvq.tahun , vfvq. kode_vendor, avg(vfvq.abnormal) as avg, vfvq.suplier_name 
+    //         from v_final_value_qc vfvq 
+    //         where date_format(vfvq.tgl, '%Y-%m') between '${startDate}' and '${endDate}'
+    //         and vfvq.kode_vendor  = '${kode_vendor}';`
+    //         console.log('downtime',query)
+    //         let [data, _] = await qa_tracking_supplier.query(query);
+    //         res.status(200).json(data);
+    //     } catch (error) {
+    //         return res.status(500).json({ message: error.message })
+    //     }
+    // },
 
-    getCuscomplain: async (req, res) => {
-        try {
-            let startDate = req.body.startDate;
-            let endDate = req.body.endDate;
-            let kode_vendor = req.body.kode_vendor;
-            let query = `select vfvq.cc , vfvq.bulan , vfvq.tahun , vfvq. kode_vendor, avg(vfvq.abnormal) as avg
-            from v_final_value_qc vfvq 
-            where date_format(vfvq.tgl, '%Y-%m') between '${startDate}' and '${endDate}'
-            and vfvq.kode_vendor  = '${kode_vendor}';`
-            console.log(query)
-            let [data, _] = await qa_tracking_supplier.query(query);
-            res.status(200).json(data);
-        } catch (error) {
-            return res.status(500).json({ message: error.message })
-        }
-    },
+    // getCuscomplain: async (req, res) => {
+    //     try {
+    //         let startDate = req.body.startDate;
+    //         let endDate = req.body.endDate;
+    //         let kode_vendor = req.body.kode_vendor;
+    //         let query = `select vfvq.cc , vfvq.bulan , vfvq.tahun , vfvq. kode_vendor, avg(vfvq.abnormal) as avg, vfvq.suplier_name 
+    //         from v_final_value_qc vfvq 
+    //         where date_format(vfvq.tgl, '%Y-%m') between '${startDate}' and '${endDate}'
+    //         and vfvq.kode_vendor  = '${kode_vendor}';`
+    //         console.log('cuscomplain',query)
+    //         let [data, _] = await qa_tracking_supplier.query(query);
+    //         res.status(200).json(data);
+    //     } catch (error) {
+    //         return res.status(500).json({ message: error.message })
+    //     }
+    // },
 
-    getIssue: async (req, res) => {
-        try {
-            let startDate = req.body.startDate;
-            let endDate = req.body.endDate;
-            let kode_vendor = req.body.kode_vendor;
-            let query = `select vfvq.issue , vfvq.bulan , vfvq.tahun , vfvq. kode_vendor, avg(vfvq.abnormal) as avg
-            from v_final_value_qc vfvq 
-            where date_format(vfvq.tgl, '%Y-%m') between '${startDate}' and '${endDate}'
-            and vfvq.kode_vendor  = '${kode_vendor}';`
-            console.log(query)
-            let [data, _] = await qa_tracking_supplier.query(query);
-            res.status(200).json(data);
-        } catch (error) {
-            return res.status(500).json({ message: error.message })
-        }
-    },
+    // getIssue: async (req, res) => {
+    //     try {
+    //         let startDate = req.body.startDate;
+    //         let endDate = req.body.endDate;
+    //         let kode_vendor = req.body.kode_vendor;
+    //         let query = `select vfvq.issue , vfvq.bulan , vfvq.tahun , vfvq. kode_vendor, avg(vfvq.abnormal) as avg, vfvq.suplier_name 
+    //         from v_final_value_qc vfvq 
+    //         where date_format(vfvq.tgl, '%Y-%m') between '${startDate}' and '${endDate}'
+    //         and vfvq.kode_vendor  = '${kode_vendor}';`
+    //         console.log('issue',query)
+    //         let [data, _] = await qa_tracking_supplier.query(query);
+    //         res.status(200).json(data);
+    //     } catch (error) {
+    //         return res.status(500).json({ message: error.message })
+    //     }
+    // },
 
 
     getClosing: async (req, res) => {
@@ -183,7 +190,7 @@ module.exports = {
             where vtsc.supplier_code = '${supplier_code}'
             and date_format(vtsc.tgl_complain , '%Y-%m') between '${startDate}' and '${endDate}';
             `
-            console.log(query)
+            console.log('closing',query)
             let [data, _] = await qa_tracking_supplier.query(query);
             res.status(200).json(data);
         } catch (error) {
