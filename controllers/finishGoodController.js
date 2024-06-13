@@ -180,9 +180,6 @@ GROUP BY
     getYearOc: async (req, res) => {
         try {
             console.log(req.body)
-            let product= req.body.product;
-            let lotno= req.body.lotno;
-            let date = new Date();
             let query = 
             `
             select *
@@ -204,7 +201,7 @@ GROUP BY
             console.log(req.body)
             let product= req.body.product;
             let lotno= req.body.lotno;
-            let date = new Date();
+            let year = req.body.year;
             let query = 
             `select tmh.lotno,tmh.material_code , tmh.product as product_t , vtm.product as product_v  , vtm.product_name , vtm.id_group , vtm.group_pengujian , vtm.jenis_uji, vtm.ket_hasil 
             from tr_micro_d tmd 
@@ -217,7 +214,7 @@ GROUP BY
             let [data, _] = await iot_oci1.query(query);
 
 
-            console.log(query)
+            console.log('getTypeParameterOc',query)
             res.status(200).json(data);
         } catch (error) {
             return res.status(500).json({ message: error.message })
@@ -291,4 +288,34 @@ GROUP BY
     },
 
 
+    getChart: async (req, res) => {
+        try {
+            let tgl_prod= req.body.tgl_prod;
+            let query = 
+            `
+               SELECT 
+                EXTRACT(YEAR FROM tgl_prod) AS tahun,
+                EXTRACT(MONTH FROM tgl_prod) AS bulan,
+                COUNT(CASE WHEN lotno LIKE '%K1' THEN 1 END) AS oc1,
+                COUNT(CASE WHEN lotno LIKE '%K2' THEN 1 END) AS oc2
+                FROM 
+                v_tr_micro
+                WHERE 
+                EXTRACT(YEAR FROM tgl_prod) = ${tgl_prod}
+                GROUP BY 
+                EXTRACT(YEAR FROM tgl_prod),
+                EXTRACT(MONTH FROM tgl_prod)
+                ORDER BY 
+                tahun,
+                bulan
+            `
+            let [data, _] = await iot_oci1.query(query);
+
+            console.log(query)
+            res.status(200).json(data);
+            console.log(data)
+        } catch (error) {
+            return res.status(500).json({ message: error.message })
+        }
+    },
 }
