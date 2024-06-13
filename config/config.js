@@ -90,6 +90,26 @@ module.exports = {
     timezone: "+07:00",
   },
 
+  iot_lims_fsb: {
+    username: "intern",
+    password: "intern",
+    database: "lims_fsb",
+    host: "192.168.9.47",
+    dialect: "mysql",
+    port: 6446,
+    timezone: "+07:00",
+  },
+
+  aio_iot_fsb: {
+    username: "intern",
+    password: "intern",
+    database: "aio_iot_fsb",
+    host: "192.168.9.47",
+    dialect: "mysql",
+    port: 6446,
+    timezone: "+07:00",
+  },
+
   aio_iot_fsb: {
     username: "intern",
     password: "intern",
@@ -120,6 +140,25 @@ module.exports = {
     timezone: "+07:00",
   },
 
+  qa_microbiology: {
+    username: "iot_prod",
+    password: "123456",
+    database: "qa_microbiology",
+    host: "192.168.9.47",
+    dialect: "mysql",
+    port: 3306,
+    timezone: "+07:00",
+  },
+  
+  qa_gmp: {
+    username: "iot_prod",
+    password: "123456",
+    database: "qa_gmp",
+    host: "192.168.9.47",
+    dialect: "mysql",
+    port: 3306,
+    timezone: "+07:00",
+  },
 
   login_aio: {
     username: "intern",
