@@ -6,7 +6,7 @@ var logger = require('morgan');
 var cors = require('cors');
 var bodyParser  = require('body-parser');
 const { spawn } = require('child_process');
-require('./bot/calms_bot');
+// require('./bot/calms_bot');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -19,6 +19,8 @@ var radarvisualRouter = require('./routes/radarvisual');
 var capaTrackerRouter = require('./routes/capaTracker');
 var inprocesscontrollRouter = require('./routes/inprocesscontroll');
 var finishGoodRouter = require('./routes/finishGood');
+var redAreaRouter = require('./routes/redArea');
+var genbaRouter = require('./routes/genba');
 
 
 
@@ -51,6 +53,8 @@ app.use('/radarvisual', radarvisualRouter);
 app.use('/capa-tracker', capaTrackerRouter);
 app.use('/inprocess-fsb', inprocesscontrollRouter);
 app.use('/finishGood', finishGoodRouter);
+app.use('/red-area', redAreaRouter);
+app.use('/genba', genbaRouter);
 
 
 

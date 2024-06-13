@@ -11,6 +11,8 @@ const iot_qa_kimfis = new Sequelize(config.iot_qa_kimfis.database, config.iot_qa
 const qa_tracking_supplier = new Sequelize(config.qa_tracking_supplier.database, config.qa_tracking_supplier.username, config.qa_tracking_supplier.password, config.qa_tracking_supplier);
 const iot_lims_fsb = new Sequelize(config.iot_lims_fsb.database, config.iot_lims_fsb.username, config.iot_lims_fsb.password, config.iot_lims_fsb);
 const aio_iot_fsb = new Sequelize(config.aio_iot_fsb.database, config.aio_iot_fsb.username, config.aio_iot_fsb.password, config.aio_iot_fsb);
+const qa_microbiology = new Sequelize(config.qa_microbiology.database, config.qa_microbiology.username, config.qa_microbiology.password, config.qa_microbiology);
+const qa_gmp = new Sequelize(config.qa_gmp.database, config.qa_gmp.username, config.qa_gmp.password, config.qa_gmp);
 
 const login_aio = new Sequelize(config.login_aio.database, config.login_aio.username, config.login_aio.password, config.login_aio);
 
@@ -25,5 +27,7 @@ module.exports = {
     iot_qa_kimfis,
     qa_tracking_supplier,
     iot_lims_fsb,
-    aio_iot_fsb
+    aio_iot_fsb,
+    qa_microbiology,
+    qa_gmp
 }
