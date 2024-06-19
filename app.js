@@ -53,6 +53,8 @@ app.use('/radarvisual', radarvisualRouter);
 app.use('/capa-tracker', capaTrackerRouter);
 app.use('/inprocess-fsb', inprocesscontrollRouter);
 app.use('/finishGood', finishGoodRouter);
+app.use('/red-area', redAreaRouter);
+app.use('/genba', genbaRouter);
 
 
 // catch 404 and forward to error handler

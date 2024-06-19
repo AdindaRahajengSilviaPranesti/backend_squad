@@ -4,27 +4,27 @@ module.exports = {
     getRedAll: async (req, res) => {
         let result = [];
         let table = [
-            "tr_swab_al4_d",
-            "tr_swab_can_d",
-            "tr_swab_enmix_d",
-            "tr_swab_oc3_d",
-            "tr_swab_pet_d",
+            "tr_swab_al4",
+            "tr_swab_can",
+            "tr_swab_enmix",
+            "tr_swab_oc3",
+            "tr_swab_pet",
         ]
         try {
 
             for (let tableName of table) {
                 let query = `
                 select 
-                    "${tableName}" as "table",
+                    "${tableName}_d" as "table",
                     year(b.tanggal_sampling) as 'year',
                     a.*
                 from 
-                    ${tableName} a 
-                    join tr_swab_al4_h b on a.id_head = b.id 
+                    ${tableName}_d a 
+                    join ${tableName}_h b on a.id_head = b.id 
                 where 
-                    a.ket_bacteria > 2
+                    (a.ket_bacteria > 2
                     or a.ket_yeast > 2
-                    or a.ket_mold  > 2`
+                    or a.ket_mold  > 2)`
 
                 let [data, _] = await qa_microbiology.query(query);
                 if(data.length != 0){
@@ -46,27 +46,27 @@ module.exports = {
     getYellowAll: async (req, res) => {
         let result = [];
         let table = [
-            "tr_swab_al4_d",
-            "tr_swab_can_d",
-            "tr_swab_enmix_d",
-            "tr_swab_oc3_d",
-            "tr_swab_pet_d",
+            "tr_swab_al4",
+            "tr_swab_can",
+            "tr_swab_enmix",
+            "tr_swab_oc3",
+            "tr_swab_pet",
         ]
         try {
 
             for (let tableName of table) {
                 let query = `
                 select 
-                    "${tableName}" as "table",
+                    "${tableName}_d" as "table",
                     year(b.tanggal_sampling) as 'year',
                     a.*
                 from 
-                    ${tableName} a 
-                    join tr_swab_al4_h b on a.id_head = b.id 
+                    ${tableName}_d a 
+                    join ${tableName}_h b on a.id_head = b.id 
                 where 
-                    a.ket_bacteria = 2
+                    (a.ket_bacteria = 2
                     or a.ket_yeast = 2
-                    or a.ket_mold  = 2`
+                    or a.ket_mold  = 2)`
 
                 let [data, _] = await qa_microbiology.query(query);
                 if(data.length != 0){

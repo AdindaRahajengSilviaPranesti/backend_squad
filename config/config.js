@@ -141,8 +141,8 @@ module.exports = {
   },
 
   qa_microbiology: {
-    username: "iot_prod",
-    password: "123456",
+    username: "intern",
+    password: "intern",
     database: "qa_microbiology",
     host: "192.168.9.47",
     dialect: "mysql",
@@ -151,8 +151,8 @@ module.exports = {
   },
   
   qa_gmp: {
-    username: "iot_prod",
-    password: "123456",
+    username: "intern",
+    password: "intern",
     database: "qa_gmp",
     host: "192.168.9.47",
     dialect: "mysql",
