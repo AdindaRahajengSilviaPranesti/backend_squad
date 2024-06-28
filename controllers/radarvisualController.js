@@ -71,7 +71,7 @@ module.exports = {
 
     getParameter: async (req, res) => {
         try {
-            let typeid=req.params.typeid;
+            let typeid = req.params.typeid;
             let id = req.params.id;
             console.log(typeid, id);
             let date = new Date();
@@ -92,48 +92,46 @@ module.exports = {
 
 
 
-    
     getDataAnalysisByDate: async (req, res) => {
         try {
             let group_id = req.body.group_id;
+            let jenis = req.body.jenis;
             let id = req.body.id;
-            // let jenis = req.body.jenis;
-            let parameter= req.body.parameterData;
+            let parameter = req.body.parameterData;
             let startDate = req.body.startDate;
             let endDate = req.body.endDate;
             let query;
-            
-            if(group_id == 1){
+
+            if (group_id == 1) {
                 query = `
-                select turh.*, turd.item , turd.result as result_d, tils.insp_start_date as startDate
+                select turh.id, turh.tanggal , turh.jenis, turh.material_code, turd.item, turd.result,mp.max, mp.min, count(turd.result) as total
                 from tr_uji_rm_h turh 
                 join tr_uji_rm_d turd on turh.id = turd.id_header 
                 join tr_insp_lot_sap tils  on tils.material_number  = turh.material_code
                 join mst_pengujian mp on mp.parameter  = turd.item
-                where turh.group_id = ${group_id}
-                and turh.jenis = ${id}
-                and turd.item = '${parameter}'
-                and plant = 1203
-                and mp.type_value = 'numeric'
-                and date_format(tils.insp_start_date, '%Y-%m') between '${startDate}' and '${endDate}'
-                group by turh.id `
-            }else if(group_id == 2){
-                query = `select tuph.*, tupd.item , tupd.result as result_d, tils.insp_start_date as startDate
+                where turd.item = '${parameter}'
+                and (turh.jenis = '${id}' or turh.jenis = '${jenis}')
+                and date_format(turh.tanggal, '%Y-%m') between '${startDate}' and '${endDate}'
+                and turd.result is not null and turd.result not like "passed"
+                group by turd.result
+                ORDER BY turh.tanggal ASC;`
+            } else if (group_id == 2) {
+                query = `
+                select tuph.id, tuph.tanggal , tuph.jenis, tuph.material_code, tupd.item, tupd.result, mp.max, mp.min, count(tupd.result) as total
                 from tr_uji_pm_h tuph 
                 join tr_uji_pm_d tupd  on tuph.id = tupd.id_header 
                 join tr_insp_lot_sap tils  on tils.material_number  = tuph.material_code
                 join mst_pengujian mp on mp.parameter  = tupd.item
-                where tuph.group_id = ${group_id}
-                and tuph.jenis = ${id}
-                and tupd.item = '${parameter}'
-                and tils.plant = 1203
-                and mp.type_value = 'numeric'
-                and date_format(tils.insp_start_date, '%Y-%m') between '${startDate}' and '${endDate}'
-                group by tuph.id `
-            } 
+                where tupd.item = '${parameter}'
+                and (tuph.jenis = '${id}' or tuph.jenis = '${jenis}')
+                and date_format(tuph.tanggal, '%Y-%m') between '${startDate}' and '${endDate}'
+                and tupd.result is not null and tupd.result not like "passed"
+                group by tupd.result 
+                ORDER BY turh.tanggal ASC;  `
+            }
 
             console.log(query)
-            
+
             let [data, _] = await iot_qa_kimfis.query(query);
             console.log(data)
             console.log(query)
@@ -147,53 +145,41 @@ module.exports = {
     getDataChart: async (req, res) => {
         try {
             let group_id = req.body.group_id;
+            let jenis = req.body.jenis;
             let id = req.body.id;
-            // let jenis = req.body.jenis;
-            let parameter= req.body.parameterData;
+            let parameter = req.body.parameterData;
             let startDate = req.body.startDate;
             let endDate = req.body.endDate;
-            let query ;
-            if(group_id == 1){
+            let query;
+            if (group_id == 1) {
                 query = `       
-            select a.*, count(a.id) as total
-            from 
-            (select turh.*, turd.item , turd.result as result_d , tils.insp_start_date as startDate , mp.max , mp.min
-            from tr_uji_rm_h turh 
-            join tr_uji_rm_d turd on turh.id = turd.id_header 
-            join tr_insp_lot_sap tils  on tils.material_number  = turh.material_code
-            join mst_pengujian mp on mp.parameter  = turd.item
-            where turh.group_id = ${group_id}
-            and turh.jenis = ${id}
-            and turd.item = '${parameter}'
-            and tils.plant = 1203
-            and mp.type_value = 'numeric'
-            and date_format(tils.insp_start_date, '%Y-%m') between '${startDate}' and '${endDate}'
-            group by turh.id ) a
-            group  by a.result_d
+                select turh.id, turh.tanggal , turh.jenis, turh.material_code, turd.item, turd.result, mp.max, mp.min, count(turd.result) as total
+                from tr_uji_rm_h turh
+                join tr_uji_rm_d turd on turh.id = turd.id_header 
+                join mst_pengujian mp on mp.parameter = turd.item 
+                where turd.item = '${parameter}'
+                and (turh.jenis = '${id}' or turh.jenis = '${jenis}')
+                and date_format(turh.tanggal, '%Y-%m') between '${startDate}' and '${endDate}'
+                and turd.result is not null and turd.result not like "passed"
+                group by turd.result 
+                ORDER BY turh.tanggal ASC;
+            `
+            } else if (group_id == 2) {
+                query =
+                    `
+                select tuph.id, tuph.tanggal , tuph.jenis, tuph.material_code, tupd.item, tupd.result, mp.max, mp.min, count(tupd.result) as total
+                from tr_uji_pm_h tuph 
+                join tr_uji_pm_d tupd on tuph.id = tupd.id_header 
+                join mst_pengujian mp on mp.parameter = tupd.item 
+                where tupd.item = '${parameter}'
+                and (tuph.jenis = '${id}' or tuph.jenis =  '${jenis}')
+                and date_format(tuph.tanggal, '%Y-%m') between '${startDate}' and '${endDate}'
+                and tupd.result is not null and tupd.result not like "passed"
+                group by tupd.result
+                ORDER BY turh.tanggal ASC;
             `
 
-        }else if(group_id == 2){
-            query = 
-            `
-            select a.*, count(a.id) as total
-            from 
-            (select tuph.*, tupd.item , tupd.result as result_d , tils.insp_start_date as startDate , mp.max , mp.min
-            from tr_uji_pm_h tuph 
-            join tr_uji_pm_d tupd  on tuph.id = tupd.id_header 
-            join tr_insp_lot_sap tils  on tils.material_number  = tuph.material_code
-            join mst_pengujian mp on mp.parameter  = tupd.item
-            where tuph.group_id = ${group_id}
-            and tuph.jenis = ${id}
-            and tupd.item = '${parameter}'
-            and tils.plant = 1203
-            and mp.type_value = 'numeric'
-            and date_format(tils.insp_start_date, '%Y-%m') between '${startDate}' and '${endDate}'
-            group by tuph.id ) a
-            group  by a.result_d
-
-            `
-
-        }
+            }
             let [data, _] = await iot_qa_kimfis.query(query);
             console.log(data)
             console.log(query)

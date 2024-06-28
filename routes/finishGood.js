@@ -1,7 +1,8 @@
 var express = require('express');
 const { getParameter, getProduct, getParameteroc, getProductoc, getTypeParameter, getPanalysisfsb, getTypeParameterOc,
      getTypeParameterOcWater, getProwaitingoc,
-     getYearOc,getChart} = require('../controllers/finishGoodController');
+     getYearOc,getChart,
+     getChartFsb} = require('../controllers/finishGoodController');
 var router = express.Router();
 
 router.get('/getParameter', getParameter);
@@ -15,4 +16,5 @@ router.post('/getTypeParameterOc', getTypeParameterOc); // OCLINE --> Paramater 
 router.post('/getTypeParameterOcWater', getTypeParameterOcWater);  // OCLINE --> Water & result
 router.get('/getProwaitingoc', getProwaitingoc); //milik OC --> progress & waiting approval
 router.post('/getChart', getChart); 
+router.post('/getChartFsb', getChartFsb); 
 module.exports = router;

@@ -289,6 +289,8 @@ GROUP BY
     },
 
 
+    //CHART PALING ATAS-,
+    //OC
     getChart: async (req, res) => {
         try {
             let tgl_prod= req.body.tgl_prod;
@@ -319,4 +321,40 @@ GROUP BY
             return res.status(500).json({ message: error.message })
         }
     },
+
+
+    //FSB
+    getChartFsb: async (req, res) => {
+        try {
+            let start_date= req.body.start_date;
+            let query = 
+            `
+               SELECT 
+                EXTRACT(YEAR FROM start_date) AS tahun,
+                EXTRACT(MONTH FROM start_date) AS bulan,
+                COUNT(vpf.lotno) AS fsb
+                FROM 
+                v_pro_fg vpf 
+                WHERE 
+                EXTRACT(YEAR FROM start_date) = ${start_date}
+                GROUP BY 
+                EXTRACT(YEAR FROM start_date),
+                EXTRACT(MONTH FROM start_date)
+                ORDER BY 
+                tahun,
+                bulan;
+            `
+            let [data, _] = await iot_lims_fsb.query(query);
+
+            console.log(query)
+            res.status(200).json(data);
+            console.log(data)
+        } catch (error) {
+            return res.status(500).json({ message: error.message })
+        }
+    },
+
+
+
+
 }
